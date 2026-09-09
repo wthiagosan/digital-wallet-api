@@ -1,0 +1,31 @@
+# Auto detect text files and normalize line endings
+* text=auto
+
+# Custom for developer convenience
+*.java text diff=java
+*.html text diff=html
+*.css text
+*.js text
+*.sql text
+*.xml text
+*.yml text
+*.yaml text
+*.md text
+*.properties text
+
+# Enforce Unix LF line endings for shell scripts (crucial for Linux/macOS Maven Wrapper execution)
+mvnw text eol=lf
+*.sh text eol=lf
+
+# Enforce Windows CRLF line endings for batch scripts
+mvnw.cmd text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Binary files
+*.jar binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
