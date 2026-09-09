@@ -68,7 +68,14 @@ graph TD
   - `ON DELETE RESTRICT` em foreign keys monetárias para impedir perda acidental de histórico.
 
 ### 5. Tratamento de Erros Padronizado sob RFC 7807 (`ProblemDetail`)
-- Todas as exceções da aplicação são interceptadas por um `@RestControllerAdvice` e convertidas no padrão nativo do Spring Boot 3 `org.springframework.http.ProblemDetail`, devolvendo `application/problem+json` com códigos HTTP precisos (`422`, `404`, `400`, `409`) e metadados contextuais (timestamp, invalid params, URLs de especificação).
+- Todas as exceções da aplicação são interceptadas por um `@RestControllerAdvice` e convertidas no padrão nativo do Spring Boot 3 `org.springframework.http.ProblemDetail`, devolvendo `application/problem+json` com códigos HTTP precisos (`422`, `404`, `400`, `409`, `429`) e metadados contextuais (timestamp, invalid params, correlationId, URLs de especificação).
+
+### 6. Arquitetura de Segurança Cibernética & Resiliência Financeira
+- **Garantia de Idempotência (Anti-Replay / Double Spending):** Suporte nativo ao cabeçalho `Idempotency-Key` em depósitos e transferências. Em cenários de retentativas automáticas de rede ou falhas no cliente, operações já executadas retornam a resposta original em cache com TTL de 24h sem duplicar débitos ou créditos.
+- **Proteção Anti-DDoS e Rate Limiting (Token Bucket):** Filtro thread-safe em memória limitando chamadas em endpoints financeiros (100 req/min por IP) com cabeçalhos padrão (`Retry-After`, `X-RateLimit-Limit`, `X-RateLimit-Remaining`) e retorno HTTP `429 Too Many Requests`.
+- **Cabeçalhos de Segurança Defensivos (OWASP Top 10):** Injeção automática de `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Content-Security-Policy`, `Referrer-Policy`, `Permissions-Policy`, `Strict-Transport-Security` (HSTS) e `Cache-Control: no-store` para proteção de dados financeiros em proxies intermediários.
+- **Rastreabilidade e Auditoria Contínua (PCI-DSS / SOC 2):** Injeção de `X-Correlation-Id` em todas as requisições via MDC (Mapped Diagnostic Context), propagando IDs de rastreio em logs, cabeçalhos HTTP e payloads de erro `ProblemDetail`.
+- **Hardening de Infraestrutura & Banco de Dados:** Porta do PostgreSQL vinculada estritamente ao loopback `127.0.0.1:5432` no Docker Compose (impedindo escaneamento público de portas), mitigação de escalonamento de privilégios (`no-new-privileges:true`), limites de CPU/memória e pool HikariCP com timeout de detecção de vazamentos (`leak-detection-threshold`).
 
 ---
 
@@ -216,7 +223,7 @@ curl -X POST http://localhost:8080/api/v1/transfers \
 
 ---
 
-## 📊 Matriz de Cobertura e Testes Automatizados (66 Testes)
+## 📊 Matriz de Cobertura e Testes Automatizados (82 Testes)
 
 | Camada | Classe de Teste | Quantidade | Foco da Validação |
 | :--- | :--- | :---: | :--- |
@@ -228,13 +235,17 @@ curl -X POST http://localhost:8080/api/v1/transfers \
 | **Regras de Negócio** | `TransferServiceTest` | 6 | Caminho feliz e 5 cenários defensivos de falha |
 | **Regras de Negócio** | `WalletServiceTest` | 5 | Depósitos com locking, consultas e montagem de extrato |
 | **Regras de Negócio** | `UserServiceTest` | 6 | Criação com carteira vinculada e duplicidades |
-| **Validação / DTOs** | `DtoValidationTest` | 9 | Validações declarativas do Bean Validation em Records |
-| **Exceções RFC 7807** | `GlobalExceptionHandlerTest` | 7 | Mapeamento de ProblemDetail e status HTTP corretos |
+| **Validação / DTOs** | `DtoValidationTest` | 12 | Validações de Records, dígitos decimais, limites e IDs positivos |
+| **Exceções RFC 7807** | `GlobalExceptionHandlerTest` | 8 | ProblemDetail, correlationId, idempotência e status HTTP |
+| **Segurança & Auditoria** | `CorrelationIdFilterTest` | 3 | Injeção de MDC, rastreio `X-Correlation-Id` e defesa contra header injection |
+| **Segurança & OWASP** | `SecurityHeadersFilterTest` | 2 | Verificação de CSP, HSTS, X-Frame-Options e Cache-Control |
+| **Segurança & Anti-DDoS**| `RateLimitingFilterTest` | 3 | Limite de requisições por IP, retorno 429 Too Many Requests e bypass de docs |
+| **Resiliência Financeira**| `IdempotencyServiceTest` | 4 | Prevenção de duplo débito/crédito, cache de resposta e retry após falha |
 | **Controladores REST**| `UserControllerTest` | 6 | MockMvc: rotas `/api/v1/users`, status 201, 400, 404, 409 |
 | **Controladores REST**| `WalletControllerTest` | 6 | MockMvc: rotas `/api/v1/wallets`, depósitos e extratos |
 | **Controladores REST**| `TransferControllerTest`| 5 | MockMvc: rotas `/api/v1/transfers`, 200, 400, 404, 422 |
 | **Contexto** | `WalletApplicationTests` | 1 | Carregamento limpo do contexto Spring Boot |
-| **TOTAL** | | **66 Testes** | **100% de Aprovação (0 Falhas)** |
+| **TOTAL** | | **82 Testes** | **100% de Aprovação (0 Falhas)** |
 
 ---
 

@@ -27,7 +27,7 @@ public class TransferServiceImpl implements TransferService {
     }
 
     @Override
-    @Transactional
+    @Transactional(timeout = 10)
     public TransferResponse transfer(TransferRequest request) {
         // 1. Validação de auto-transferência (Self-transfer check)
         if (request.sourceWalletId().equals(request.targetWalletId())) {

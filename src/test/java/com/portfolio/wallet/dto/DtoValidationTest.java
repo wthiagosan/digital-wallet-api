@@ -92,6 +92,36 @@ class DtoValidationTest {
     }
 
     @Test
+    @DisplayName("Should reject DepositRequest with more than 2 decimal places (anti-fractional exploit)")
+    void shouldFailDepositRequestWithExcessiveFractionalDigits() {
+        var request = new DepositRequest(new BigDecimal("10.12345"));
+        var violations = validator.validate(request);
+
+        assertThat(violations).isNotEmpty();
+        assertThat(violations).anyMatch(v -> v.getMessage().contains("2 casas decimais"));
+    }
+
+    @Test
+    @DisplayName("Should reject TransferRequest with negative wallet IDs")
+    void shouldFailTransferRequestWithNegativeWalletIds() {
+        var request = new TransferRequest(-1L, 2L, new BigDecimal("50.00"));
+        var violations = validator.validate(request);
+
+        assertThat(violations).isNotEmpty();
+        assertThat(violations).anyMatch(v -> v.getMessage().contains("maior que zero"));
+    }
+
+    @Test
+    @DisplayName("Should reject TransferRequest exceeding maximum transaction threshold")
+    void shouldFailTransferRequestWithExceededMaxAmount() {
+        var request = new TransferRequest(1L, 2L, new BigDecimal("2000000000.00"));
+        var violations = validator.validate(request);
+
+        assertThat(violations).isNotEmpty();
+        assertThat(violations).anyMatch(v -> v.getMessage().contains("valor máximo permitido"));
+    }
+
+    @Test
     @DisplayName("Should correctly map User and Wallet to UserResponse")
     void shouldMapUserResponse() {
         User user = new User(1L, "Linus Torvalds", "11122233344", "linus@kernel.org", LocalDateTime.now());

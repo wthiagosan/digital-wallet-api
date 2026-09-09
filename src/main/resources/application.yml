@@ -7,6 +7,14 @@ spring:
     username: ${DB_USER:wallet_user}
     password: ${DB_PASS:wallet_pass}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      pool-name: WalletHikariCP
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 20000
+      idle-timeout: 300000
+      max-lifetime: 1200000
+      leak-detection-threshold: 30000
 
   jpa:
     hibernate:
@@ -32,3 +40,23 @@ springdoc:
 
 server:
   port: 8080
+  server-header: ""
+  shutdown: graceful
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
+    include-exception: false
+
+logging:
+  pattern:
+    level: "%5p"
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%thread] [corr:%X{correlationId}] %cyan(%logger{36}) : %msg%n"
+  level:
+    com.portfolio.wallet: INFO
+    org.springframework.web: WARN
+    org.hibernate: WARN
+
+security:
+  cors:
+    allowed-origins: "*"

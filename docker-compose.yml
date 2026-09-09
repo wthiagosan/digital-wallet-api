@@ -3,19 +3,29 @@ services:
     image: postgres:16-alpine
     container_name: wallet-postgres
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     ports:
-      - "5432:5432"
+      # Bound strictly to localhost to prevent external public exposure
+      - "127.0.0.1:5432:5432"
     environment:
-      POSTGRES_DB: wallet_db
-      POSTGRES_USER: wallet_user
-      POSTGRES_PASSWORD: wallet_pass
+      POSTGRES_DB: ${POSTGRES_DB:-wallet_db}
+      POSTGRES_USER: ${POSTGRES_USER:-wallet_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-wallet_pass}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U wallet_user -d wallet_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-wallet_user} -d ${POSTGRES_DB:-wallet_db}"]
       interval: 5s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    networks:
+      - wallet-network
 
   app:
     build:
@@ -23,18 +33,31 @@ services:
       dockerfile: Dockerfile
     container_name: wallet-api
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     ports:
       - "8080:8080"
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_NAME: wallet_db
-      DB_USER: wallet_user
-      DB_PASS: wallet_pass
+      DB_NAME: ${POSTGRES_DB:-wallet_db}
+      DB_USER: ${POSTGRES_USER:-wallet_user}
+      DB_PASS: ${POSTGRES_PASSWORD:-wallet_pass}
     depends_on:
       postgres:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 768M
+    networks:
+      - wallet-network
 
 volumes:
   postgres_data:
     driver: local
+
+networks:
+  wallet-network:
+    driver: bridge

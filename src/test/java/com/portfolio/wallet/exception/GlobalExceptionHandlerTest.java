@@ -106,6 +106,19 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Should format IdempotencyConflictException as RFC 7807 with 409 status")
+    void shouldHandleIdempotencyConflictException() {
+        var ex = new IdempotencyConflictException("idem-key-12345");
+
+        ProblemDetail pd = exceptionHandler.handleIdempotencyConflictException(ex, request);
+
+        assertThat(pd.getStatus()).isEqualTo(HttpStatus.CONFLICT.value());
+        assertThat(pd.getTitle()).isEqualTo("Conflito de Idempotência");
+        assertThat(pd.getProperties()).containsEntry("code", "IDEMPOTENCY_CONFLICT");
+        assertThat(pd.getProperties()).containsEntry("idempotencyKey", "idem-key-12345");
+    }
+
+    @Test
     @DisplayName("Should format unhandled Exception as RFC 7807 with 500 status")
     void shouldHandleGenericException() {
         var ex = new RuntimeException("Falha catastrófica inesperada");

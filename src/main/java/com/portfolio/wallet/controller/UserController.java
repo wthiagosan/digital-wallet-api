@@ -8,8 +8,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +25,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users")
+@Validated
 @Tag(name = "Users", description = "Operações de cadastro e consulta de usuários")
 public class UserController {
 
@@ -51,9 +54,11 @@ public class UserController {
     @Operation(summary = "Buscar usuário por ID", description = "Retorna os detalhes cadastrais do usuário e o identificador de sua carteira.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuário localizado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Identificador de usuário inválido"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
-    public ResponseEntity<UserResponse> findById(@PathVariable Long id) {
+    public ResponseEntity<UserResponse> findById(
+            @PathVariable @Positive(message = "O ID do usuário deve ser maior que zero") Long id) {
         return ResponseEntity.ok(userService.findById(id));
     }
 

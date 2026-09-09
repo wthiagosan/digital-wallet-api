@@ -27,7 +27,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    @Transactional
+    @Transactional(timeout = 10)
     public WalletResponse deposit(Long walletId, DepositRequest request) {
         Wallet wallet = walletRepository.findByIdWithLock(walletId)
                 .orElseThrow(() -> new WalletNotFoundException(walletId));
