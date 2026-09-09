@@ -225,6 +225,8 @@ curl -X POST http://localhost:8080/api/v1/transfers \
 
 ## 👨‍💻 Autor
 
-- **Desenvolvido por:** Welinton Sandrin
+- **Desenvolvido por:** [Welinton Thiago](https://github.com/wthiagosan)
+- **E-mail:** [W.thiagosan@gmail.com](mailto:W.thiagosan@gmail.com)
+- **Repositório:** [https://github.com/wthiagosan/digital-wallet-api](https://github.com/wthiagosan/digital-wallet-api)
 - **Perfil:** Desenvolvedor Java Backend
-- **Objetivo:** Showcase técnico para contratação de alto nível.
+- **Objetivo:** Showcase técnico de engenharia de software para contratação de alto nível.
