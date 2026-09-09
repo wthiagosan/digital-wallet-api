@@ -82,25 +82,40 @@ graph TD
 
 ---
 
-### Passo 1: Subir o Banco de Dados (PostgreSQL 16)
-Na raiz do projeto, execute:
+### Opção A: Executar Tudo via Docker Compose (Recomendado / 1 Comando)
+Para subir o banco de dados PostgreSQL e a API containerizada juntos com apenas um comando:
 ```bash
-docker compose up -d
+docker compose up --build -d
 ```
-*O PostgreSQL subirá no container `wallet-postgres` na porta `5432` com healthcheck automático.*
+*A imagem Docker multi-stage é compilada e otimizada automaticamente com Alpine Linux + Eclipse Temurin 21 JRE, o banco é inicializado e a API aguarda o healthcheck do PostgreSQL antes de iniciar na porta `8080`.*
 
 ---
 
-### Passo 2: Executar a Aplicação
+### Opção B: Executar Localmente via Maven Wrapper ou JAR
 
-**No Windows:**
-```powershell
-.\mvnw.cmd spring-boot:run
+#### 1. Subir apenas o Banco de Dados (PostgreSQL 16)
+```bash
+docker compose up postgres -d
 ```
 
-**No Linux / macOS:**
-```bash
+#### 2. Executar a Aplicação (via Maven Wrapper ou Fat JAR)
+
+**Via Maven Wrapper:**
+```powershell
+# Windows
+.\mvnw.cmd spring-boot:run
+
+# Linux / macOS
 ./mvnw spring-boot:run
+```
+
+**Via Fat JAR compilado:**
+```bash
+# Build do JAR executável
+.\mvnw.cmd clean package
+
+# Execução direta
+java -jar target/wallet-0.0.1-SNAPSHOT.jar
 ```
 
 *O Flyway executará automaticamente as migrações `V1` a `V4` ao inicializar e o Hibernate validará a integridade do schema.*

@@ -1,0 +1,14 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+**/.git
+**/.gitignore
+**/.gitattributes
+**/.idea
+**/.vscode
+*.iml
+*.log
+.DS_Store
+PROJECT_BLUEPRINT.md
+README.md
+docker-compose.yml
+Dockerfile
