@@ -1,0 +1,47 @@
+name: CI / Build & Test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Java 21 LTS - Build & Test Suite
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: wallet_db
+          POSTGRES_USER: wallet_user
+          POSTGRES_PASSWORD: wallet_pass
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Grant Execute Permission for Maven Wrapper
+        run: chmod +x mvnw
+
+      - name: Run Full Test Suite (82 Tests)
+        run: ./mvnw clean test
+
+      - name: Package Standalone Fat JAR
+        run: ./mvnw package -DskipTests

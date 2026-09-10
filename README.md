@@ -6,7 +6,8 @@
 [![Flyway](https://img.shields.io/badge/Flyway-Migration-CC0200?style=for-the-badge&logo=flyway&logoColor=white)](https://flywaydb.org/)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 [![OpenAPI](https://img.shields.io/badge/OpenAPI-Swagger%203-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](http://localhost:8080/swagger-ui/index.html)
-[![Tests](https://img.shields.io/badge/Tests-66%20Passing-brightgreen?style=for-the-badge&logo=junit5&logoColor=white)](https://junit.org/junit5/)
+[![Tests](https://img.shields.io/badge/Tests-82%20Passing-brightgreen?style=for-the-badge&logo=junit5&logoColor=white)](https://junit.org/junit5/)
+[![CI Build](https://github.com/wthiagosan/digital-wallet-api/actions/workflows/ci.yml/badge.svg)](https://github.com/wthiagosan/digital-wallet-api/actions/workflows/ci.yml)
 
 > **Projeto Showcase de Engenharia Backend Corporativa**  
 > Desenvolvido para demonstrar domínio prático dos fundamentos da engenharia de software corporativa: **Orientação a Objetos, Clean Code, integridade transacional (ACID), concorrência segura com controle de deadlocks e tratamento defensivo de erros padronizado (RFC 7807)**.
