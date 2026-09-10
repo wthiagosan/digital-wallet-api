@@ -8,7 +8,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+import org.springframework.test.context.ActiveProfiles;
+
+@SpringBootTest(properties = {
+    "spring.flyway.enabled=true",
+    "spring.jpa.hibernate.ddl-auto=none"
+})
+@ActiveProfiles("test")
 class PostgresFlywayIntegrationTest {
 
     @Autowired
