@@ -10,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(properties = {
+    "spring.datasource.url=jdbc:h2:mem:flyway_migration_test;DB_CLOSE_DELAY=-1;MODE=PostgreSQL",
     "spring.flyway.enabled=true",
     "spring.jpa.hibernate.ddl-auto=none"
 })
