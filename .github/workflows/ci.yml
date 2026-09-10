@@ -19,9 +19,9 @@ jobs:
           POSTGRES_USER: wallet_user
           POSTGRES_PASSWORD: wallet_pass
         ports:
-          - 5432:5432
+          - 5433:5432
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U wallet_user -d wallet_db"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -41,6 +41,12 @@ jobs:
         run: chmod +x mvnw
 
       - name: Run Full Test Suite (82 Tests)
+        env:
+          DB_HOST: localhost
+          DB_PORT: 5433
+          DB_NAME: wallet_db
+          DB_USER: wallet_user
+          DB_PASS: wallet_pass
         run: ./mvnw clean test
 
       - name: Package Standalone Fat JAR
